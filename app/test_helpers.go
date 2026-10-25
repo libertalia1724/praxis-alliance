@@ -11,10 +11,9 @@ import (
 	"time"
 
 	"cosmossdk.io/math"
-	"cosmossdk.io/x/tx/signing"
+	"github.com/cosmos/cosmos-sdk/x/tx/signing"
 
 	cosmoserrors "cosmossdk.io/errors"
-	pruningtypes "cosmossdk.io/store/pruning/types"
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/codec/address"
@@ -23,6 +22,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
+	pruningtypes "github.com/cosmos/cosmos-sdk/store/v2/pruning/types"
 	"github.com/cosmos/cosmos-sdk/testutil/mock"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
@@ -38,7 +38,7 @@ import (
 
 	"github.com/terra-money/alliance/app/params"
 
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	abci "github.com/cometbft/cometbft/abci/types"
 	tmtypes "github.com/cometbft/cometbft/types"
 	dbm "github.com/cosmos/cosmos-db"
@@ -115,7 +115,7 @@ func SetupWithGenesisValSet(t *testing.T, valSet *tmtypes.ValidatorSet, genAccs 
 func setup(withGenesis bool, invCheckPeriod uint) (*App, map[string]json.RawMessage) {
 	db := dbm.NewMemDB()
 
-	app := New(log.NewNopLogger(), db, nil, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, EmptyAppOptions{})
+	app := New(log.NewNopLogger(), db, true, map[int64]bool{}, DefaultNodeHome, invCheckPeriod, EmptyAppOptions{})
 	if withGenesis {
 		return app, app.DefaultGenesis()
 	}
@@ -299,7 +299,6 @@ func NewTestNetworkFixture() network.TestFixture {
 	app := New(
 		log.NewNopLogger(),
 		dbm.NewMemDB(),
-		nil,
 		true,
 		map[int64]bool{},
 		dir,
@@ -308,7 +307,7 @@ func NewTestNetworkFixture() network.TestFixture {
 	)
 	appCtr := func(val network.ValidatorI) servertypes.Application {
 		return New(
-			val.GetCtx().Logger, dbm.NewMemDB(), nil, true, map[int64]bool{},
+			val.GetCtx().Logger, dbm.NewMemDB(), true, map[int64]bool{},
 			val.GetCtx().Config.RootDir, 0,
 			EmptyAppOptions{},
 			bam.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),

@@ -61,7 +61,7 @@ func TestDelegationWithASingleAsset(t *testing.T) {
 	require.NoError(t, err)
 
 	// Check current total staked tokens
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(1000_000), totalBonded)
 
@@ -330,7 +330,7 @@ func TestSuccessfulRedelegation(t *testing.T) {
 		}
 	}
 
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	// Check total bonded amount
 	require.Equal(t, math.NewInt(3_000_000), totalBonded)
@@ -653,7 +653,7 @@ func TestSuccessfulUndelegation(t *testing.T) {
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
 
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	// Check total bonded amount
 	require.Equal(t, math.NewInt(3_000_000), totalBonded)
@@ -739,7 +739,7 @@ func TestSuccessfulUndelegation(t *testing.T) {
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
 
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	// Check total bonded amount
 	require.Equal(t, math.NewInt(3_000_000), totalBonded)
@@ -891,7 +891,7 @@ func TestUndelegateAfterClaimingTakeRate(t *testing.T) {
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
 	// Check total bonded amount
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(11_000_000), totalBonded)
 
@@ -1037,7 +1037,7 @@ func TestDelegationWithNativeStakingChanges(t *testing.T) {
 	require.NoError(t, err)
 
 	// Check total bonded tokens
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(13_000_000), totalBonded)
 
@@ -1045,7 +1045,7 @@ func TestDelegationWithNativeStakingChanges(t *testing.T) {
 	_, err = app.StakingKeeper.Delegate(ctx, user2, math.NewInt(2000_000), stakingtypes.Unbonded, *val2.Validator, true)
 	require.NoError(t, err)
 	// Check total bonded tokens
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(15_000_000), totalBonded)
 
@@ -1053,7 +1053,7 @@ func TestDelegationWithNativeStakingChanges(t *testing.T) {
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
 	// Check total bonded tokens
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(39_000_000), totalBonded)
 
@@ -1065,7 +1065,7 @@ func TestDelegationWithNativeStakingChanges(t *testing.T) {
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
 	// Check total bonded tokens
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(39_000_000), totalBonded)
 
@@ -1078,7 +1078,7 @@ func TestDelegationWithNativeStakingChanges(t *testing.T) {
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
 	// Check total bonded tokens
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	// If native staking is changed, it should not affect alliance staking amount
 	require.Equal(t, math.NewInt(39_000_000-1_000_000), totalBonded)

@@ -7,8 +7,8 @@ import (
 	"time"
 
 	cmath "cosmossdk.io/math"
-	cstore "cosmossdk.io/store"
-	storetypes "cosmossdk.io/store/types"
+	cstore "github.com/cosmos/cosmos-sdk/store/v2"
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 
 	"github.com/cosmos/cosmos-sdk/runtime"
 
@@ -117,7 +117,7 @@ func (k Keeper) RebalanceBondTokenWeights(ctx context.Context, assets []*types.A
 		return err
 	}
 
-	totalBonded, err := k.stakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := k.stakingKeeper.TotalValidatorPower(ctx)
 	if err != nil {
 		return err
 	}

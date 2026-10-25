@@ -53,7 +53,6 @@ func TestFullAppSimulation(t *testing.T) {
 
 	app := app.New(logger,
 		db,
-		nil,
 		true,
 		map[int64]bool{},
 		app.DefaultNodeHome,
@@ -108,7 +107,6 @@ func BenchmarkSimulation(b *testing.B) {
 
 	app := app.New(logger,
 		db,
-		nil,
 		true,
 		map[int64]bool{},
 		app.DefaultNodeHome,

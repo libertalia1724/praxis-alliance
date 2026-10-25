@@ -15,7 +15,7 @@ func Migrate(sk types.StakingKeeper, bk types.BankKeeper) func(ctx sdk.Context) 
 			return err
 		}
 
-		bondedPoolTokens, err := sk.TotalBondedTokens(ctx)
+		bondedPoolTokens, err := sk.TotalValidatorPower(ctx)
 		if err != nil {
 			return err
 		}

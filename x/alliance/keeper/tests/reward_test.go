@@ -473,7 +473,7 @@ func TestClaimRewardsWithMultipleValidators(t *testing.T) {
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
 	// Check total bonded amount
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(11_000_000), totalBonded)
 

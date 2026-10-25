@@ -167,18 +167,18 @@ func (mr *MockStakingKeeperMockRecorder) RemoveValidatorTokensAndShares(ctx, val
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RemoveValidatorTokensAndShares", reflect.TypeOf((*MockStakingKeeper)(nil).RemoveValidatorTokensAndShares), ctx, validator, sharesToRemove)
 }
 
-// TotalBondedTokens mocks base method.
-func (m *MockStakingKeeper) TotalBondedTokens(ctx types.Context) math.Int {
+// TotalValidatorPower mocks base method.
+func (m *MockStakingKeeper) TotalValidatorPower(ctx types.Context) math.Int {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "TotalBondedTokens", ctx)
+	ret := m.ctrl.Call(m, "TotalValidatorPower", ctx)
 	ret0, _ := ret[0].(math.Int)
 	return ret0
 }
 
-// TotalBondedTokens indicates an expected call of TotalBondedTokens.
-func (mr *MockStakingKeeperMockRecorder) TotalBondedTokens(ctx interface{}) *gomock.Call {
+// TotalValidatorPower indicates an expected call of TotalValidatorPower.
+func (mr *MockStakingKeeperMockRecorder) TotalValidatorPower(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TotalBondedTokens", reflect.TypeOf((*MockStakingKeeper)(nil).TotalBondedTokens), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "TotalValidatorPower", reflect.TypeOf((*MockStakingKeeper)(nil).TotalValidatorPower), ctx)
 }
 
 // Unbond mocks base method.

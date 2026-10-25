@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
+	storetypes "github.com/cosmos/cosmos-sdk/store/v2/types"
 
 	"github.com/terra-money/alliance/x/alliance/types"
 

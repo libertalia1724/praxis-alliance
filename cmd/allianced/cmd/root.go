@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"errors"
-	"io"
 	"os"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -15,7 +14,7 @@ import (
 
 	"github.com/spf13/cast"
 
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	tmcfg "github.com/cometbft/cometbft/config"
 	tmcli "github.com/cometbft/cometbft/libs/cli"
 	dbm "github.com/cosmos/cosmos-db"
@@ -40,7 +39,6 @@ import (
 	txmodule "github.com/cosmos/cosmos-sdk/x/auth/tx/config"
 	"github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	"github.com/cosmos/cosmos-sdk/x/crisis"
 	genutilcli "github.com/cosmos/cosmos-sdk/x/genutil/client/cli"
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 
@@ -54,7 +52,6 @@ func NewRootCmd() (*cobra.Command, params.EncodingConfig) {
 	// note, this is not necessary when using app wiring, as depinject can be directly used (see root_v2.go)
 	tempApp := app.New(log.NewNopLogger(),
 		dbm.NewMemDB(),
-		nil,
 		true,
 		map[int64]bool{},
 		app.DefaultNodeHome,
@@ -236,9 +233,7 @@ func genesisCommand(encodingConfig params.EncodingConfig, manager module.BasicMa
 	return cmd
 }
 
-func addModuleInitFlags(startCmd *cobra.Command) {
-	crisis.AddModuleInitFlags(startCmd)
-}
+func addModuleInitFlags(startCmd *cobra.Command) {}
 
 func queryCommand() *cobra.Command {
 	cmd := &cobra.Command{
@@ -283,7 +278,7 @@ func txCommand() *cobra.Command {
 	return cmd
 }
 
-func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts servertypes.AppOptions) servertypes.Application {
+func newApp(logger log.Logger, db dbm.DB, appOpts servertypes.AppOptions) servertypes.Application {
 	baseappOptions := server.DefaultBaseappOptions(appOpts)
 
 	skipUpgradeHeights := make(map[int64]bool)
@@ -292,7 +287,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 	}
 
 	return app.New(
-		logger, db, traceStore, true, skipUpgradeHeights,
+		logger, db, true, skipUpgradeHeights,
 		cast.ToString(appOpts.Get(flags.FlagHome)),
 		cast.ToUint(appOpts.Get(server.FlagInvCheckPeriod)),
 		appOpts,
@@ -303,7 +298,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer, appOpts serverty
 // appExport creates a new app (optionally at a given height)
 // and exports state.
 func appExport(
-	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailAllowedAddrs []string, appOpts servertypes.AppOptions, modulesToExport []string,
+	logger log.Logger, db dbm.DB, height int64, forZeroHeight bool, jailAllowedAddrs []string, appOpts servertypes.AppOptions, modulesToExport []string,
 ) (servertypes.ExportedApp, error) {
 	var simApp *app.App
 	homePath, ok := appOpts.Get(flags.FlagHome).(string)
@@ -312,13 +307,13 @@ func appExport(
 	}
 
 	if height != -1 {
-		simApp = app.New(logger, db, traceStore, false, map[int64]bool{}, homePath, uint(1), appOpts)
+		simApp = app.New(logger, db, false, map[int64]bool{}, homePath, uint(1), appOpts)
 
 		if err := simApp.LoadHeight(height); err != nil {
 			return servertypes.ExportedApp{}, err
 		}
 	} else {
-		simApp = app.New(logger, db, traceStore, true, map[int64]bool{}, homePath, uint(1), appOpts)
+		simApp = app.New(logger, db, true, map[int64]bool{}, homePath, uint(1), appOpts)
 	}
 
 	return simApp.ExportAppStateAndValidators(forZeroHeight, jailAllowedAddrs, modulesToExport)

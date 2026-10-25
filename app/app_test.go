@@ -3,7 +3,7 @@ package app
 import (
 	"testing"
 
-	"cosmossdk.io/log"
+	"cosmossdk.io/log/v2"
 	db "github.com/cosmos/cosmos-db"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -20,7 +20,6 @@ func TestAppExportAndBlockedAddrs(t *testing.T) {
 	app = New(
 		log.NewNopLogger(),
 		db.NewMemDB(),
-		nil,
 		true,
 		map[int64]bool{},
 		DefaultNodeHome,

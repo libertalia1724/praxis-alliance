@@ -96,7 +96,7 @@ func TestDelegationQuery(t *testing.T) {
 	require.NoError(t, err)
 
 	// Check current total staked tokens
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(1000_000), totalBonded)
 
@@ -158,7 +158,7 @@ func TestDelegationRewardsQuery(t *testing.T) {
 	require.NoError(t, err)
 
 	// Check current total staked tokens
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(1000_000), totalBonded)
 

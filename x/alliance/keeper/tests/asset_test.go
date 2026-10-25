@@ -70,7 +70,7 @@ func TestRebalancingAfterRewardsRateChange(t *testing.T) {
 	assets := app.AllianceKeeper.GetAllAssets(ctx)
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(3_000_000), totalBonded)
 
@@ -113,7 +113,7 @@ func TestRebalancingAfterRewardsRateChange(t *testing.T) {
 	assets = app.AllianceKeeper.GetAllAssets(ctx)
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(21_000_000), totalBonded)
 
@@ -135,7 +135,7 @@ func TestRebalancingAfterRewardsRateChange(t *testing.T) {
 	assets = app.AllianceKeeper.GetAllAssets(ctx)
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(2_000_000), totalBonded)
 
@@ -257,7 +257,7 @@ func TestRebalancingWithUnbondedValidator(t *testing.T) {
 	require.NoError(t, err)
 	_, err = app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(16_000_000), totalBonded)
 
@@ -273,7 +273,7 @@ func TestRebalancingWithUnbondedValidator(t *testing.T) {
 	require.NoError(t, err)
 	_, err = app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(13_100_000), totalBonded)
 
@@ -285,7 +285,7 @@ func TestRebalancingWithUnbondedValidator(t *testing.T) {
 	assets = app.AllianceKeeper.GetAllAssets(ctx)
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(13_100_000), totalBonded)
 
@@ -300,14 +300,14 @@ func TestRebalancingWithUnbondedValidator(t *testing.T) {
 	require.NoError(t, err)
 	_, err = app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(16_000_000), totalBonded)
 
 	assets = app.AllianceKeeper.GetAllAssets(ctx)
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(16_000_000), totalBonded)
 
@@ -424,7 +424,7 @@ func TestRebalancingAfterChangesToUnbondedValidator(t *testing.T) {
 	require.NoError(t, err)
 	_, err = app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(16_000_000), totalBonded)
 	requireBondedPoolMatchesBondedValidators(t, app, ctx)
@@ -441,7 +441,7 @@ func TestRebalancingAfterChangesToUnbondedValidator(t *testing.T) {
 	require.NoError(t, err)
 	_, err = app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(13_100_000), totalBonded)
 	requireBondedPoolMatchesBondedValidators(t, app, ctx)
@@ -454,7 +454,7 @@ func TestRebalancingAfterChangesToUnbondedValidator(t *testing.T) {
 	assets = app.AllianceKeeper.GetAllAssets(ctx)
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	// should still be the same as before since unbonded validators should not be affected by rebalancing
 	require.Equal(t, math.NewInt(13_100_000), totalBonded)
@@ -507,7 +507,7 @@ func TestRebalancingAfterChangesToUnbondedValidator(t *testing.T) {
 func requireBondedPoolMatchesBondedValidators(t *testing.T, app *test_helpers.App, ctx sdk.Context) {
 	t.Helper()
 
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 
 	validators, err := app.StakingKeeper.GetAllValidators(ctx)
@@ -642,7 +642,7 @@ func TestRebalancingWithJailedValidator(t *testing.T) {
 	assets := app.AllianceKeeper.GetAllAssets(ctx)
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	// 12 * 1.6 = 19.2
 	require.Equal(t, math.NewInt(19_200_000), totalBonded)
@@ -657,7 +657,7 @@ func TestRebalancingWithJailedValidator(t *testing.T) {
 	require.NoError(t, err)
 	_, err = app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(14_720_000), totalBonded)
 
@@ -669,7 +669,7 @@ func TestRebalancingWithJailedValidator(t *testing.T) {
 	assets = app.AllianceKeeper.GetAllAssets(ctx)
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	// 11 * 1.6 = 17.6
 	require.Equal(t, math.NewInt(14_720_000), totalBonded)
@@ -682,14 +682,14 @@ func TestRebalancingWithJailedValidator(t *testing.T) {
 	require.NoError(t, err)
 	_, err = app.StakingKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
 	require.NoError(t, err)
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(19_200_000), totalBonded)
 
 	assets = app.AllianceKeeper.GetAllAssets(ctx)
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(19_200_000), totalBonded)
 
@@ -802,7 +802,7 @@ func TestRebalancingWithDelayedRewardsStartTime(t *testing.T) {
 	assets := app.AllianceKeeper.GetAllAssets(ctx)
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	require.Equal(t, math.NewInt(12_000_000), totalBonded)
 
@@ -811,7 +811,7 @@ func TestRebalancingWithDelayedRewardsStartTime(t *testing.T) {
 	assets = app.AllianceKeeper.GetAllAssets(ctx)
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	// 12 * 1.5 = 18
 	require.Equal(t, math.NewInt(18_000_000), totalBonded)
@@ -821,7 +821,7 @@ func TestRebalancingWithDelayedRewardsStartTime(t *testing.T) {
 	assets = app.AllianceKeeper.GetAllAssets(ctx)
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
-	totalBonded, err = app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err = app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	// 12 * 1.7 = 18
 	require.Equal(t, math.NewInt(20_400_000), totalBonded)
@@ -1172,7 +1172,7 @@ func TestClaimTakeRate(t *testing.T) {
 	assets := app.AllianceKeeper.GetAllAssets(ctx)
 	err = app.AllianceKeeper.RebalanceBondTokenWeights(ctx, assets)
 	require.NoError(t, err)
-	totalBonded, err := app.StakingKeeper.TotalBondedTokens(ctx)
+	totalBonded, err := app.StakingKeeper.TotalValidatorPower(ctx)
 	require.NoError(t, err)
 	// Check total bonded amount
 	require.Equal(t, math.NewInt(13_000_000), totalBonded)

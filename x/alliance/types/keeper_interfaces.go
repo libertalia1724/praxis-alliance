@@ -26,7 +26,7 @@ type StakingKeeper interface {
 		ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, shares math.LegacyDec,
 	) (amount math.Int, err error)
 	GetDelegation(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (delegation types.Delegation, err error)
-	TotalBondedTokens(ctx context.Context) (math.Int, error)
+	TotalValidatorPower(ctx context.Context) (math.Int, error)
 	GetDelegatorBonded(ctx context.Context, delegator sdk.AccAddress) (math.Int, error)
 	RemoveValidatorTokensAndShares(ctx context.Context, validator types.Validator,
 		sharesToRemove math.LegacyDec,

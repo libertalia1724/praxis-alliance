@@ -100,7 +100,7 @@ test-benchmark:
 	@VERSION=$(VERSION) go test -v -mod=readonly -tags='ledger test_ledger_mock' github.com/terra-money/alliance/x/alliance/tests/benchmark
 
 test-simulate:
-	@VERSION=$(VERSION) go test -v -run=TestFullAppSimulation ./app -NumBlocks 200 -BlockSize 10 -Commit -Enabled -Period 1
+	@VERSION=$(VERSION) go test -v -run=TestFullAppSimulation ./app -NumBlocks 200 -BlockSize 10 -Commit -Enabled -Period 1 -Seed 9 -GenesisTime 1700000000
 
 .PHONY: test test-unit test-e2e test-benchmark test-simulate
 ###############################################################################

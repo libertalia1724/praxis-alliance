@@ -68,3 +68,8 @@ func (h Hooks) AfterValidatorSlashed(_ context.Context, _ sdk.ConsAddress, _ sdk
 func (h Hooks) AfterUnbondingInitiated(_ context.Context, _ uint64) error {
 	return nil
 }
+
+func (h Hooks) AfterValidatorConsKeyUpdated(ctx context.Context, oldConsAddr, newConsAddr sdk.ConsAddress,
+	valAddr sdk.ValAddress) error {
+	return nil
+}

@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-
 	simulation2 "github.com/terra-money/alliance/x/alliance/tests/simulation"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -15,7 +13,6 @@ import (
 	"github.com/terra-money/alliance/x/alliance/client/cli"
 	"github.com/terra-money/alliance/x/alliance/keeper"
 	migrationsv4 "github.com/terra-money/alliance/x/alliance/migrations/v4"
-	migrationsv5 "github.com/terra-money/alliance/x/alliance/migrations/v5"
 	migrationsv6 "github.com/terra-money/alliance/x/alliance/migrations/v6"
 	"github.com/terra-money/alliance/x/alliance/types"
 
@@ -47,7 +44,6 @@ type AppModuleBasic struct {
 // NewAppModule creates a new AppModule object
 func NewAppModule(cdc codec.Codec, keeper keeper.Keeper, sk types.StakingKeeper,
 	ak types.AccountKeeper, bk types.BankKeeper, registry cdctypes.InterfaceRegistry,
-	subspace paramstypes.Subspace,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{cdc: cdc, pcdc: codec.NewProtoCodec(registry)},
@@ -55,7 +51,6 @@ func NewAppModule(cdc codec.Codec, keeper keeper.Keeper, sk types.StakingKeeper,
 		stakingKeeper:  sk,
 		bankKeeper:     bk,
 		accountKeeper:  ak,
-		subspace:       subspace,
 	}
 }
 
@@ -103,7 +98,6 @@ type AppModule struct {
 	stakingKeeper types.StakingKeeper
 	bankKeeper    types.BankKeeper
 	accountKeeper types.AccountKeeper
-	subspace      paramstypes.Subspace // Legacy for migration only
 }
 
 func (a AppModule) EndBlock(ctx context.Context) error {
@@ -133,10 +127,6 @@ func (a AppModule) RegisterServices(cfg module.Configurator) {
 	err := cfg.RegisterMigration(types.ModuleName, 3, migrationsv4.Migrate(a.keeper))
 	if err != nil {
 		panic(fmt.Sprintf("failed to migrate x/alliance from version 3 to 4: %v", err))
-	}
-	err = cfg.RegisterMigration(types.ModuleName, 4, migrationsv5.Migrate(a.keeper, a.subspace))
-	if err != nil {
-		panic(fmt.Sprintf("failed to migrate x/alliance from version 4 to 5: %v", err))
 	}
 	err = cfg.RegisterMigration(types.ModuleName, 5, migrationsv6.Migrate(a.stakingKeeper, a.bankKeeper))
 	if err != nil {

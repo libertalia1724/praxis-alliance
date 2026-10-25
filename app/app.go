@@ -62,10 +62,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	mintkeeper "github.com/cosmos/cosmos-sdk/x/mint/keeper"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	"github.com/cosmos/cosmos-sdk/x/params"
-	paramskeeper "github.com/cosmos/cosmos-sdk/x/params/keeper"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	paramproposal "github.com/cosmos/cosmos-sdk/x/params/types/proposal"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
@@ -107,6 +103,7 @@ var (
 		minttypes.ModuleName:                {authtypes.Minter},
 		stakingtypes.BondedPoolName:         {authtypes.Burner, authtypes.Staking},
 		stakingtypes.NotBondedPoolName:      {authtypes.Burner, authtypes.Staking},
+		stakingtypes.KeyRotationFeePoolName: {authtypes.Burner},
 		govtypes.ModuleName:                 {authtypes.Burner},
 		alliancemoduletypes.ModuleName:      {authtypes.Minter, authtypes.Burner},
 		alliancemoduletypes.RewardsPoolName: nil,
@@ -155,7 +152,6 @@ type App struct {
 	DistrKeeper           distrkeeper.Keeper
 	GovKeeper             govkeeper.Keeper
 	UpgradeKeeper         upgradekeeper.Keeper
-	ParamsKeeper          paramskeeper.Keeper
 	EvidenceKeeper        evidencekeeper.Keeper
 	FeeGrantKeeper        feegrantkeeper.Keeper
 	ConsensusParamsKeeper consensusparamkeeper.Keeper
@@ -208,10 +204,10 @@ func New(
 	keys := storetypes.NewKVStoreKeys(
 		authtypes.StoreKey, authz.ModuleName, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey, govtypes.StoreKey,
-		paramstypes.StoreKey, upgradetypes.StoreKey, feegrant.StoreKey,
-		evidencetypes.StoreKey, alliancemoduletypes.StoreKey, consensusparamtypes.StoreKey,
+		upgradetypes.StoreKey, feegrant.StoreKey, evidencetypes.StoreKey,
+		alliancemoduletypes.StoreKey, consensusparamtypes.StoreKey,
 	)
-	tkeys := storetypes.NewTransientStoreKeys(paramstypes.TStoreKey)
+	tkeys := storetypes.NewTransientStoreKeys()
 	memKeys := storetypes.NewMemoryStoreKeys()
 
 	app := &App{
@@ -342,8 +338,7 @@ func New(
 
 	govRouter := govv1beta1.NewRouter()
 	govRouter.
-		AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler).
-		AddRoute(paramproposal.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper))
+		AddRoute(govtypes.RouterKey, govv1beta1.ProposalHandler)
 	govConfig := govtypes.DefaultConfig()
 	/*
 		Example of setting gov params:
@@ -378,20 +373,19 @@ func New(
 			app.AccountKeeper, app.StakingKeeper, app,
 			txConfig,
 		),
-		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
+		auth.NewAppModule(appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
 		authzmodule.NewAppModule(appCodec, app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		vesting.NewAppModule(app.AccountKeeper, app.BankKeeper),
-		custombankmodule.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper, app.GetSubspace(banktypes.ModuleName)),
+		custombankmodule.NewAppModule(appCodec, app.BankKeeper, app.AccountKeeper),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.FeeGrantKeeper, app.interfaceRegistry),
-		gov.NewAppModule(appCodec, &app.GovKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(govtypes.ModuleName)),
-		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil, app.GetSubspace(minttypes.ModuleName)),
-		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(slashingtypes.ModuleName), app.interfaceRegistry),
-		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.GetSubspace(distrtypes.ModuleName)),
-		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.GetSubspace(stakingtypes.ModuleName)),
+		gov.NewAppModule(appCodec, &app.GovKeeper, app.AccountKeeper, app.BankKeeper),
+		mint.NewAppModule(appCodec, app.MintKeeper, app.AccountKeeper, nil),
+		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper, app.interfaceRegistry),
+		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
+		staking.NewAppModule(appCodec, app.StakingKeeper, app.AccountKeeper, app.BankKeeper),
 		upgrade.NewAppModule(&app.UpgradeKeeper, app.AccountKeeper.AddressCodec()),
 		evidence.NewAppModule(app.EvidenceKeeper),
-		params.NewAppModule(app.ParamsKeeper),
-		alliancemodule.NewAppModule(appCodec, app.AllianceKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry, app.GetSubspace(alliancemoduletypes.ModuleName)),
+		alliancemodule.NewAppModule(appCodec, app.AllianceKeeper, app.StakingKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 	)
 
 	// BasicModuleManager defines the module BasicManager is in charge of setting up basic,
@@ -432,7 +426,6 @@ func New(
 		genutiltypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
 		alliancemoduletypes.ModuleName,
 	)
@@ -450,7 +443,6 @@ func New(
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		alliancemoduletypes.ModuleName,
@@ -473,7 +465,6 @@ func New(
 		evidencetypes.ModuleName,
 		authz.ModuleName,
 		feegrant.ModuleName,
-		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
 		alliancemoduletypes.ModuleName,
@@ -492,7 +483,7 @@ func New(
 	// NOTE: this is not required apps that don't use the simulator for fuzz testing
 	// transactions
 	overrideModules := map[string]module.AppModuleSimulation{
-		authtypes.ModuleName: auth.NewAppModule(app.appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts, app.GetSubspace(authtypes.ModuleName)),
+		authtypes.ModuleName: auth.NewAppModule(app.appCodec, app.AccountKeeper, authsims.RandomGenesisAccounts),
 	}
 
 	// create the simulation manager and define the order of the modules for deterministic simulations	app.sm = module.NewSimulationManagerFromAppModules(app.ModuleManager.Modules, overrideModules)
@@ -639,14 +630,6 @@ func (app *App) GetTKey(storeKey string) *storetypes.TransientStoreKey {
 // NOTE: This is solely used for testing purposes.
 func (app *App) GetMemKey(storeKey string) *storetypes.MemoryStoreKey {
 	return app.memKeys[storeKey]
-}
-
-// GetSubspace returns a param subspace for a given module name.
-//
-// NOTE: This is solely to be used for testing purposes.
-func (app *App) GetSubspace(moduleName string) paramstypes.Subspace {
-	subspace, _ := app.ParamsKeeper.GetSubspace(moduleName)
-	return subspace
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided
